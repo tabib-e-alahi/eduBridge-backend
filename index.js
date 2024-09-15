@@ -26,6 +26,15 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    // ============ our db collections ==================
+    const courseCollection = client.db('eduBridgeDB').collection('courses');
+
+    // ================ here i am getting all courses ===========
+    app.get('/allcourses', async(req,res) =>{
+        const result = await courseCollection.find().toArray();
+        res.send(result);
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
