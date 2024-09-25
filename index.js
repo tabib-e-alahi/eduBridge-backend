@@ -27,13 +27,42 @@ async function run() {
     await client.connect();
 
     // ============ our db collections ==================
-    const courseCollection = client.db('eduBridgeDB').collection('courses');
+    const courseCollection = client.db("eduBridgeDB").collection("courses");
+    const userCollection = client.db("eduBridgeDB").collection("users");
+
+    // hera will be api for users
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+
+      // checking if the user already exited or not
+      const query = { email: user.email };
+      const existingUser = await userCollection.findOne(query);
+
+      if (existingUser) {
+        return res.send({ message: "user already extisted", insertedId: null });
+      }
+
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
+    app.get("/users", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email
+      const query = {email: email}
+      const result = await userCollection.findOne(query);
+      res.send(result);
+    });
 
     // ================ here i am getting all courses ===========
-    app.get('/allcourses', async(req,res) =>{
-        const result = await courseCollection.find().toArray();
-        res.send(result);
-    })
+    app.get("/allcourses", async (req, res) => {
+      const result = await courseCollection.find().toArray();
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
