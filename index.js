@@ -81,9 +81,18 @@ async function run() {
     // ============= my cart related apis ================
     app.post("/carts", async (req, res) => {
       const cartItem = req.body;
+      // checking if the user already exited or not
+      const query = { userId: cartItem.userId, courseId: cartItem.courseId };
+      const existingItem = await cartCollection.findOne(query);
+      console.log(existingItem)
+
+      if (existingItem) {
+        return res.send({ message: "Already added to the cart.", insertedId: null });
+      }
       const result = await cartCollection.insertOne(cartItem);
       res.send(result);
     });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
