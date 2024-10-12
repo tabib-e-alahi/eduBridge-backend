@@ -29,6 +29,7 @@ async function run() {
     // ============ our db collections ==================
     const courseCollection = client.db("eduBridgeDB").collection("courses");
     const userCollection = client.db("eduBridgeDB").collection("users");
+    const cartCollection = client.db("eduBridgeDB").collection("carts");
 
     // hera will be api for users
     app.post("/users", async (req, res) => {
@@ -52,8 +53,8 @@ async function run() {
     });
 
     app.get("/users/:email", async (req, res) => {
-      const email = req.params.email
-      const query = {email: email}
+      const email = req.params.email;
+      const query = { email: email };
       const result = await userCollection.findOne(query);
       res.send(result);
     });
@@ -66,7 +67,7 @@ async function run() {
 
     app.get("/allcourses/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) };
       const result = await courseCollection.findOne(query);
       res.send(result);
     });
@@ -74,6 +75,13 @@ async function run() {
     // ============== user feedback related apis===========
     app.get("/feedbacks", async (req, res) => {
       const result = await courseCollection.find().toArray();
+      res.send(result);
+    });
+
+    // ============= my cart related apis ================
+    app.post("/carts", async (req, res) => {
+      const cartItem = req.body;
+      const result = await cartCollection.insertOne(cartItem);
       res.send(result);
     });
 
